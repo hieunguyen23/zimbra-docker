@@ -20,6 +20,17 @@
 if [ -e /opt/zimbra-install/install-autoKeys ]
 then ## Zimbra NOT installed yet.
 
+if [ -z "$LOGSTASH_IP" ]
+then
+      echo "Push log to logstash not define, so not config"
+      rm -rf /opt/push-logs-to-logstash
+else
+      echo "Push log to logstash server $LOGSTASH_IP, configuring...."
+      cp /opt/push-logs-to-logstash/* /etc/rsyslog.d/
+      sed -i "s|LOGSTASH_IP|$LOGSTASH_IP|g" /etc/rsyslog.d/02-output.conf
+      rm -rf /opt/push-logs-to-logstash
+fi
+
 cp /etc/rsyslog.conf /etc/rsyslog.conf.bak
 sed -i 's|SysSock.Use="off")|SysSock.Use="on")|g' /etc/rsyslog.conf
 sed -i 's|module(load="imjournal"|#module(load="imjournal"|g' /etc/rsyslog.conf
